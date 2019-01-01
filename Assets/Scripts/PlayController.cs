@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayController : MonoBehaviour {
-
+    //speed of spaceship
     public float speed = 10.0f;
 
     //the range of player can move
@@ -12,7 +12,24 @@ public class PlayController : MonoBehaviour {
     private float yMin = -1.6f;
     private float yMax = 8f;
 
+    public GameObject bullet;
+    //the position of generating bullet
+    public Transform spawnPos;
+   
+    //the rate of emit bullet , one second 4 bullets
+    [Header("bullets interval time") ]
+    public float fireRate  = 0.25f;
+    //next time of emitting bullet
+    private float nextFire;
 
+    private void Update()
+    {
+        if (Input.GetButton("Fire1") &&  Time.time > nextFire)
+        {
+            nextFire = Time.time + fireRate;
+            Instantiate(bullet, spawnPos.position, spawnPos.rotation);
+        }
+    }
 
     // Update is called once per frame
     void FixedUpdate ()
