@@ -10,7 +10,7 @@ public class PlayController : MonoBehaviour {
     private float xMin = -4.1f;
     private float xMax = 4.1f;
     private float yMin = -1.6f;
-    private float yMax = 8f;
+    private float yMax = 14f;
 
     public GameObject bullet;
     //the position of generating bullet
