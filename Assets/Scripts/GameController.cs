@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GameController : MonoBehaviour {
 
@@ -16,6 +17,10 @@ public class GameController : MonoBehaviour {
     private float spawnTime = 1f;
     //interval time for each group
     private float nextTime = 4f;
+
+    private int score = 0;
+
+    public Text scoretext;
 
     void Start()
     {
@@ -49,5 +54,11 @@ public class GameController : MonoBehaviour {
         GameObject go = hazards[Random.Range(0, hazards.Length - 1)];
         Vector3 p = new Vector3(Random.Range(Xmin, Xmax), Y, 0);
         Instantiate(go, p, Quaternion.identity);
+    }
+
+    public void addScore(int v)
+    {
+        score += v;
+        scoretext.text = "Score: " + score.ToString();
     }
 }

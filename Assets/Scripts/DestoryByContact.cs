@@ -8,6 +8,24 @@ public class DestoryByContact : MonoBehaviour
     public GameObject playerExplosion;
     public GameObject explosion;
 
+    private GameController gamecontroller;
+
+    public int score;
+
+    private void Start()
+    {
+        GameObject gameControllerObj = GameObject.FindWithTag("GameController");
+        if ( gameControllerObj!= null)
+        {
+            gamecontroller = gameControllerObj.GetComponent<GameController>();
+        }
+        if (gamecontroller == null)
+        {
+            Debug.Log("Cannot find GameController");
+        }
+
+    }
+
     private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.tag == "Boundary")
@@ -23,5 +41,6 @@ public class DestoryByContact : MonoBehaviour
         //destory asteroids
         Instantiate(explosion, transform.position, transform.rotation);
         Destroy(gameObject);
+        gamecontroller.addScore(score);
     }
 }

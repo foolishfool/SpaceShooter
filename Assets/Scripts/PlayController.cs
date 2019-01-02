@@ -22,12 +22,16 @@ public class PlayController : MonoBehaviour {
     //next time of emitting bullet
     private float nextFire;
 
+    public AudioClip fireAudio;
+  
+
     private void Update()
     {
-        if (Input.GetButton("Fire1") &&  Time.time > nextFire)
+        if (Input.GetButton("Fire1") && Time.time > nextFire)
         {
             nextFire = Time.time + fireRate;
             Instantiate(bullet, spawnPos.position, spawnPos.rotation);
+            GetComponent<AudioSource>().PlayOneShot(fireAudio);
         }
     }
 

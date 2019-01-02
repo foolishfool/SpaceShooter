@@ -106,6 +106,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerExplosion: {fileID: 100004, guid: 2857e183f4cd3df4e9096e5b578bd32f, type: 3}
   explosion: {fileID: 100008, guid: a93496017806b7740910df5fd946f306, type: 3}
+  score: 15
 --- !u!1001 &8957719140099796933
 PrefabInstance:
   m_ObjectHideFlags: 0
