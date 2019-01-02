@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class GameController : MonoBehaviour {
 
@@ -22,15 +23,27 @@ public class GameController : MonoBehaviour {
 
     public Text scoretext;
 
+    private bool gameOver;
+
+    public Text gameOverText;
+    public Text helpText;
+
     void Start()
     {
-        StartCoroutine(spawnWaves()); 
+        StartCoroutine(spawnWaves());
+        gameOverText.text = "";
+        helpText.text = "";
+        scoretext.text = "Score: " + score.ToString();
     }
 
     // Update is called once per frame
     void Update () {
-  
-	}
+        if (gameOver && Input.GetKeyDown(KeyCode.R))
+        {
+            SceneManager.LoadScene(0);
+        }
+
+    }
 
     IEnumerator spawnWaves()
     {
@@ -45,6 +58,11 @@ public class GameController : MonoBehaviour {
             }
 
             yield return new WaitForSeconds(nextTime);
+
+            if (gameOver)
+            {
+                break;
+            }
         }
     
     }
@@ -60,5 +78,12 @@ public class GameController : MonoBehaviour {
     {
         score += v;
         scoretext.text = "Score: " + score.ToString();
+    }
+
+    public void GameOver()
+    {
+        gameOver = true ;
+        gameOverText.text = "GAME OVER !";
+        helpText.text = "PRESS R TO RESTART";
     }
 }
