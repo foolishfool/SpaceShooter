@@ -19,10 +19,9 @@ public class GameController : MonoBehaviour {
     //interval time for each group
     private float nextTime = 4f;
 
+    private JumpingNumberTextComponent textjumperNumber;
+
     private int score = 0;
-
-    public Text scoretext;
-
     private bool gameOver;
 
     public Text gameOverText;
@@ -33,7 +32,18 @@ public class GameController : MonoBehaviour {
         StartCoroutine(spawnWaves());
         gameOverText.text = "";
         helpText.text = "";
-        scoretext.text = "Score: " + score.ToString();
+  
+
+        GameObject textJumperObj = GameObject.FindWithTag("TextJumper");
+
+        if (textJumperObj != null)
+        {
+            textjumperNumber = textJumperObj.GetComponent<JumpingNumberTextComponent>();
+        }
+        if (textjumperNumber == null)
+        {
+            Debug.Log("Cannot find JumpingNumberTextComponent");
+        }
     }
 
     // Update is called once per frame
@@ -76,8 +86,10 @@ public class GameController : MonoBehaviour {
 
     public void addScore(int v)
     {
+        int currentScore = score;
         score += v;
-        scoretext.text = "Score: " + score.ToString();
+        //play animation
+        textjumperNumber.Change(currentScore, score);
     }
 
     public void GameOver()

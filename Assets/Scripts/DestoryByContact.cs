@@ -15,6 +15,7 @@ public class DestoryByContact : MonoBehaviour
     private void Start()
     {
         GameObject gameControllerObj = GameObject.FindWithTag("GameController");
+
         if ( gameControllerObj!= null)
         {
             gamecontroller = gameControllerObj.GetComponent<GameController>();

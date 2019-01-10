@@ -9,60 +9,61 @@ using UnityEngine.UI;
 public class JumpingNumberTextComponent : MonoBehaviour
 {
     [SerializeField]
-    [Tooltip("按最高位起始顺序设置每位数字Text（显示组）")]
+    [Tooltip("From the highest order to loweset order, setting every number Text (Current Number)")]
     private List<Text> _numbers;
     [SerializeField]
-    [Tooltip("按最高位起始顺序设置每位数字Text（替换组）")]
+    [Tooltip("From the highest order to loweset order, setting every number Text (Replaced Number)")]
     private List<Text> _unactiveNumbers;
     /// <summary>
-    /// 动画时长
+    /// the animation duration time
     /// </summary>
     [SerializeField]
-    private float _duration = 1.5f;
+    private float _duration = 0.05f;
     /// <summary>
-    /// 数字每次滚动时长
+    /// Each Rolling Duration time of Number
     /// </summary>
     [SerializeField]
-    private float _rollingDuration = 0.05f;
+    private float _rollingDuration = 0.005f;
     /// <summary>
-    /// 数字每次变动数值
+    /// The nubmer gap in each change
     /// </summary>
     private int _speed;
     /// <summary>
-    /// 滚动延迟（每进一位增加一倍延迟，让滚动看起来更随机自然）
+    /// rolling delay time (double when the number order increases）
     /// </summary>
     [SerializeField]
-    private float _delay = 0.008f;
+    private float _delay = 0.002f;
+
     /// <summary>
-    /// Text文字宽高
+    /// Text Size Height and Width
     /// </summary>
     private Vector2 _numberSize;
     /// <summary>
-    /// 当前数字
+    /// current number
     /// </summary>
     private int _curNumber = 1;
     /// <summary>
-    /// 起始数字
+    /// initial number
     /// </summary>
     private int _fromNumber;
     /// <summary>
-    /// 最终数字
+    /// then end number
     /// </summary>
     private int _toNumber;
     /// <summary>
-    /// 各位数字的缓动实例
+    /// instance of tweener or each number 
     /// </summary>
     private List<Tweener> _tweener = new List<Tweener>();
     /// <summary>
-    /// 是否处于数字滚动中
+    /// whether in the process of rolling
     /// </summary>
     private bool _isJumping;
     /// <summary>
-    /// 滚动完毕回调
+    /// call-back function when finish rolling 
     /// </summary>
     public Action OnComplete;
     /// <summary>
-    /// 最终数字和起始数字的差
+    /// the difference between from number and to number
     /// </summary>
 
     private float _different;
@@ -74,7 +75,7 @@ public class JumpingNumberTextComponent : MonoBehaviour
             Debug.Log("[JumpingNumberTextComponent] 还未设置Text组件!");
             return;
         }
-        _numberSize = _numbers[0].rectTransform.sizeDelta;
+        _numberSize = _numbers[0].rectTransform.anchoredPosition;
     }
 
     public float duration
@@ -83,19 +84,6 @@ public class JumpingNumberTextComponent : MonoBehaviour
         set
         {
             _duration = value;
-        }
-    }
-
-    private void Start()
-    {
-       
-    }
-
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.J))
-        {
-            TestChange();
         }
     }
 
@@ -145,11 +133,11 @@ public class JumpingNumberTextComponent : MonoBehaviour
     {
         while (true)
         {
-            if (_speed > 0)//增加
+            if (_speed > 0)//add
             {
                 _curNumber = Math.Min(_curNumber + _speed, _toNumber);            
             }
-            else if (_speed < 0) //减少
+            else if (_speed < 0) //reduce
             {
                 _curNumber = Math.Max(_curNumber + _speed, _toNumber);
             }
@@ -160,7 +148,8 @@ public class JumpingNumberTextComponent : MonoBehaviour
                 StopCoroutine("DoJumpNumber");
                 _isJumping = false;
                 //hide all the unactiveNumbers and show all the numbers
-                ShowNextNumbers(false);
+                ShowCurrentNumbers(true);
+                ShowUnactiveNumbers(false);
 
                 if (OnComplete != null) OnComplete();
                 yield return null;
@@ -209,19 +198,29 @@ public class JumpingNumberTextComponent : MonoBehaviour
                 {
                     _unactiveNumbers[i].text = "0";
                 }
-
-             //   _unactiveNumbers[i].rectTransform.anchoredPosition = new Vector2(_unactiveNumbers[i].rectTransform.anchoredPosition.x, (_speed > 0 ? -1 : 1) * _numberSize.y);
-              //  _numbers[i].rectTransform.anchoredPosition = new Vector2(_unactiveNumbers[i].rectTransform.anchoredPosition.x, 0);
+              
+                _unactiveNumbers[i].rectTransform.anchoredPosition = new Vector2(_unactiveNumbers[i].rectTransform.anchoredPosition.x, (_speed > 0 ? -0.5f : 0.5f) * _numberSize.y );
+                //0.5f is the offset of the y position of _unactiveNumbers move
+                _numbers[i].rectTransform.anchoredPosition = new Vector2(_unactiveNumbers[i].rectTransform.anchoredPosition.x, _numberSize.y);
 
                 if (_unactiveNumbers[i].text != _numbers[i].text)
                 {
-                    DoTween(_numbers[i], (_speed > 0 ? 1 : -1) * _numberSize.y, _delay * i);
-                    DoTween(_unactiveNumbers[i], 0, _delay * i);
+                    _unactiveNumbers[i].gameObject.SetActive(true);
+        
+                    DoTween(_numbers[i], _numberSize.y, _delay * i);
+                    DoTween(_unactiveNumbers[i], _numberSize.y, _delay * i);
 
                     Text tmp = _numbers[i];
                     _numbers[i] = _unactiveNumbers[i];
                     _unactiveNumbers[i] = tmp;
                 }
+                else
+                {
+                    //when _unactiveNumbers[i].text == _numbers[i].text, hide _unactiveNumbers[i]
+                    _unactiveNumbers[i].gameObject.SetActive(false);
+
+                }
+
             }
         }
     }
@@ -235,11 +234,12 @@ public class JumpingNumberTextComponent : MonoBehaviour
         _tweener.Add(t);
     }
 
-    [ContextMenu("测试数字变化")]
-    public void TestChange()
+    [ContextMenu("Test Nubmer changes")]
+    public void TestChange( )
     {
         //active all the unactivenumbers
-        ShowNextNumbers(true);
+        ShowCurrentNumbers(true);
+        ShowUnactiveNumbers(true);
 
         int ram = UnityEngine.Random.Range(1, 999999);
         Debug.Log(ram);
@@ -255,30 +255,23 @@ public class JumpingNumberTextComponent : MonoBehaviour
 
     }
 
-
-    private void ShowNextNumbers(bool show)
+    private void ShowCurrentNumbers(bool show)
     {
         for (int i = 0; i < _numbers.Count; i++)
         {
-            if (!_numbers[i].gameObject.activeSelf)
-            {
-                _numbers[i].gameObject.SetActive(true);
-            }
+         
+           _numbers[i].gameObject.SetActive(show);
+      
         }
-
-        for (int i = 0; i < _unactiveNumbers.Count; i++)
-        {
-            if (_unactiveNumbers[i].gameObject.activeSelf)
-            {
-                _unactiveNumbers[i].gameObject.SetActive(show);
-            }
-            else
-            {
-                _unactiveNumbers[i].gameObject.SetActive(show);
-            }
-        }
-
     }
 
+    private void ShowUnactiveNumbers(bool show)
+    {
+        for (int i = 0; i < _unactiveNumbers.Count; i++)
+        {
 
+            _unactiveNumbers[i].gameObject.SetActive(show);
+
+        }
+    }
 }
